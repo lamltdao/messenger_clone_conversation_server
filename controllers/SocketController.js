@@ -20,7 +20,7 @@ let handleSocket = (socket) => {
     // Listen to connected users for a new message.
     socket.on('send-message', ({conversationId, message}) => {
       // Create a message with the message and id of the user.
-      const message = new MessageModel({
+      const newMessage = new MessageModel({
         message,
         userId,
       })
@@ -28,7 +28,7 @@ let handleSocket = (socket) => {
       // Save the message to the database.
       const conversation = ConversationModel.findById(conversationId, (err, conversation) => {
           if(err) return console.error(err)
-          conversation.messages.push(message)
+          conversation.messages.push(newMessage)
           conversation.save((err) => {
             if (err) return console.error(err);
           })

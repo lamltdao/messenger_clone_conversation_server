@@ -5,8 +5,11 @@ const conversationSchema = new mongoose.Schema({
     users: [{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'
-    }]
+        ref: 'Users'
+    }],
+    name: {
+        type: String
+    }
 })
 
 module.exports = mongoose.model('Conversation', conversationSchema)

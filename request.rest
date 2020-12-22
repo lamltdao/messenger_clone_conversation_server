@@ -1,0 +1,34 @@
+### userId
+Lam: 5fd8f9f5d3f6170eb29fe01f
+Nguyen: 5fd8fa2cd3f6170eb29fe020
+### Login to get accessToken
+POST http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+    "email" : "lam@gmail.com",
+    "password": "123456"
+}
+
+### Use refreshToken to get a new accessToken
+POST http://localhost:3001/auth/token
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmQ4ZjlmNWQzZjYxNzBlYjI5ZmUwMWYiLCJyb2xlIjoibm9ybWFsIiwiaWF0IjoxNjA4NjU1NzA2fQ.hXEfNXVP0S475FYvdQ-ffyDYhwOloKky-0kSVjDa59o"
+}
+
+### Create new conversation
+POST http://localhost:5000/conversation
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmQ4ZjlmNWQzZjYxNzBlYjI5ZmUwMWYiLCJyb2xlIjoibm9ybWFsIiwiaWF0IjoxNjA4NjU1NzA2LCJleHAiOjE2MDg2NTkzMDZ9.-mfbxJFsu7MjiRlT25ZLAnoDlhjQLPbSquAgF6QAkqQ
+
+{
+    "messages": [],
+    "recipientIds": ["5fd8fa2cd3f6170eb29fe020"] 
+}
+
+### Get all conversations 
+GET  http://localhost:5000/conversation
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZmQ4ZjlmNWQzZjYxNzBlYjI5ZmUwMWYiLCJyb2xlIjoibm9ybWFsIiwiaWF0IjoxNjA4NjU1NzA2LCJleHAiOjE2MDg2NTkzMDZ9.-mfbxJFsu7MjiRlT25ZLAnoDlhjQLPbSquAgF6QAkqQ
