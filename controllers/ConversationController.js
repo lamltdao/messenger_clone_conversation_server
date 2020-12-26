@@ -9,8 +9,7 @@ module.exports = {
             const {messages, recipientIds} = req.body
             const {userId}= req.payload
             const users = [...recipientIds, userId]
-            
-            const name = recipientIds.length == 1 ? recipientIds[0] : recipientIds.join(', ')
+            const name = ''
             const conversation = new ConversationModel({messages, users, name})
             await conversation.save()
             return res.status(201).json(conversation)
