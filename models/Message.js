@@ -1,8 +1,15 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
-  message: String,
-  userId: String,
+  messageBody: {
+    type: String,
+    required: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Users'
+},
 }, {
   timestamps: true,
 });

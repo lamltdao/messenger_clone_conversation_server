@@ -3,12 +3,9 @@ const UserModel = require('../models/User').model
 const ConversationModel = require('../models/Conversation')
 
 let handleSocket = (socket) => {
-    const {accessToken} = socket.handshake.query
-    // Get userId from accessToken
-    const userId = ''
+    const {userId} = socket.handshake.query
     socket.join(userId)
 
-    
     // // Get the last 10 messages from the database.
     // MessageModel.find().sort({createdAt: -1}).limit(10).exec((err, messages) => {
     //   if (err) return console.error(err);
@@ -18,15 +15,15 @@ let handleSocket = (socket) => {
     // });
 
     // Listen to connected users for a new message.
-    socket.on('send-message', ({conversationId, message}) => {
+    socket.on('send-message', async ({conversationId, messageBody}) => {
       // Create a message with the message and id of the user.
       const newMessage = new MessageModel({
-        message,
-        userId,
+        messageBody,
+        user: userId,
       })
 
       // Save the message to the database.
-      const conversation = ConversationModel.findById(conversationId, (err, conversation) => {
+      const conversation = await ConversationModel.findById(conversationId, (err, conversation) => {
           if(err) return console.error(err)
           conversation.messages.push(newMessage)
           conversation.save((err) => {
@@ -34,11 +31,10 @@ let handleSocket = (socket) => {
           })
       })
 
-
       // Notify all other users, including the sender, about the new message.
       let allRecipientIds = conversation.users
       allRecipientIds.forEach(recipientId => {
-        socket.broadcast.to(recipientId).emit('push-message', message);
+        socket.broadcast.emit('push-message', {conversationId, userId ,messageBody});
       })
     });
 }

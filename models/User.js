@@ -6,7 +6,8 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -15,7 +16,11 @@ const UserSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: ['admin', 'normal']
-    }
+    },
+    contacts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Users'
+    }]
 })
 
 module.exports = {model: mongoose.model('Users', UserSchema), UserSchema}

@@ -7,7 +7,12 @@ const app = express()
 const http = require('http').Server(app)
 const mongoose = require('mongoose')
 const path = require('path')
-const io = require('socket.io')(http)
+const io = require('socket.io')(http, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+})
 const bodyParser = require('body-parser')
 const cors = require('cors')
 // other folders
@@ -19,10 +24,7 @@ app.use(bodyParser.urlencoded({limit: '10mb', extended: false}))
 app.use(bodyParser.json())
 app.use(cors())
 // Connect DB
-mongoose.connect(process.env.MONGODB_URI, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true
-})
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true})
 const db = mongoose.connection
 db.on('error', err => console.log(err))
 db.once('open', () => console.log('Connected to MongoDB'))

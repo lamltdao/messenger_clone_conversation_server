@@ -11,19 +11,52 @@ module.exports = {
             const users = [...recipientIds, userId]
             const name = ''
             const conversation = new ConversationModel({messages, users, name})
-            await conversation.save()
+            try {
+                await conversation.save()
+            }
+            catch {
+                return res.status(400).json('Bad Input')
+            }
             return res.status(201).json(conversation)
         }
         catch(err) {
-            return res.status(500).json('Cannot create conversation')
+            return res.status(500).json('Internal error')
         }
     },
-    getAllConversation: async (req, res) => {
+    getAllConversations: async (req, res) => {
         try {
+            const {messageLimit} = req.query
             const {userId} = req.payload
+            
+            // get conversations
             const conversations = await ConversationModel.find({
                 users: {"$in": [userId]}
-            }).populate('users').exec()
+            })
+            .populate('users', '_id email name')
+            .populate({
+                path: 'messages',
+                select: '-_id',
+                populate: {
+                    path: 'user',
+                    model: 'Users',
+                    select: 'name _id'
+                }
+            })
+            .exec()
+
+            // get a limited number of messages only    
+            conversations.map(conversation => {
+
+                const length = conversation.messages.length
+                if(length >= messageLimit) {
+                    const limitedMessages = conversation.messages.filter((element, index) => {
+                        return index >= length - messageLimit
+                    })
+                    conversation.messages = limitedMessages               
+                }
+                
+            })
+        
             if(conversations == null) {
                 return res.status(404).json('Cannot find conversations')
             }
@@ -36,14 +69,13 @@ module.exports = {
     },
     deleteConversation: async (req,res) => {
         try {
-            const {userId} = req.payload
             const {conversationId} = req.params
             const conversation = await ConversationModel.findById(conversationId)
             await conversation.remove()
             return res.status(204).json("Successfully delete conversation")
         }
         catch {
-            return res.status(500).json('Cannot delete conversation')
+            return res.status(500).json('Internal error')
         }
     }
 }
