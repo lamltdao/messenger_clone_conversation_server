@@ -6,9 +6,9 @@ const ConversationModel = require('../models/Conversation')
 module.exports = {
     createNewConversation: async (req, res) => {
         try {
-            const {messages, recipientIds} = req.body
+            const {messages, users} = req.body
             const {userId}= req.payload
-            const users = [...recipientIds, userId]
+            users.push(userId)
             const name = ''
             const conversation = new ConversationModel({messages, users, name})
             try {
@@ -20,6 +20,7 @@ module.exports = {
             return res.status(201).json(conversation)
         }
         catch(err) {
+            console.log(err);
             return res.status(500).json('Internal error')
         }
     },
@@ -32,17 +33,6 @@ module.exports = {
             const conversations = await ConversationModel.find({
                 users: {"$in": [userId]}
             })
-            .populate('users', '_id email name')
-            .populate({
-                path: 'messages',
-                select: '-_id',
-                populate: {
-                    path: 'user',
-                    model: 'Users',
-                    select: 'name _id'
-                }
-            })
-            .exec()
 
             // get a limited number of messages only    
             conversations.map(conversation => {
@@ -73,6 +63,16 @@ module.exports = {
             const conversation = await ConversationModel.findById(conversationId)
             await conversation.remove()
             return res.status(204).json("Successfully delete conversation")
+        }
+        catch {
+            return res.status(500).json('Internal error')
+        }
+    },
+    getConversationById: async (req,res) => {
+        try {
+            const {conversationId} = req.params
+            const conversation = await ConversationModel.findById(conversationId)
+            return res.status(200).json(conversation)
         }
         catch {
             return res.status(500).json('Internal error')
