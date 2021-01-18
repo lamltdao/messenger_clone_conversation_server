@@ -33,7 +33,15 @@ module.exports = {
             const conversations = await ConversationModel.find({
                 users: {"$in": [userId]}
             })
-
+            .populate('users', '_id name email')
+            .populate({
+                path: 'messages',
+                populate: {
+                    path: 'user',
+                    select: '_id name email'
+                }
+            }) 
+            .exec()
             // get a limited number of messages only    
             conversations.map(conversation => {
 

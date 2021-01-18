@@ -5,22 +5,17 @@ const mongoose = require('mongoose')
 let handleChatSocket = async (socket) => {
   try {
     const {userId} = socket.handshake.query
-    // get list of conversation Ids to be used as room names
-    const conversations = await ConversationModel.find({
-      users: {$in: [userId]}
-    })
-    const conversationIds = conversations.map(conversation => {
-      return JSON.stringify(conversation._id)    
-    })
-    // join those rooms
-    socket.join(conversationIds)
-   
+    // Use userId as name of room
+    socket.join(JSON.stringify(userId))
+    
+    
+
     // Handle new messages
-    socket.on('send-message', async ({conversationId, userId, messageBody}) => {
+    socket.on('send-message', async ({conversationId, user, messageBody}) => {
       // Create a message with the message and id of the user.
       const newMessage = new MessageModel({
         messageBody,
-        user: userId,
+        user: user._id,
       })
 
       // Save the message to the database.
@@ -31,9 +26,11 @@ let handleChatSocket = async (socket) => {
             if (err) return console.log(err);
           })
       })
-
-      // Notify all other users, excluding the sender, about the new message.
-      socket.to(JSON.stringify(conversationId)).emit('push-message', {conversationId, userId , messageBody})
+      const recipients = conversation.users.filter(recipient => recipient._id !== user._id )
+        .map(recipient => {
+          // Notify all other users, excluding the sender, about the new message.
+          socket.to(JSON.stringify(recipient._id)).emit('push-message', {conversationId, user , messageBody})
+        })
     })
   }
   catch(err) {
