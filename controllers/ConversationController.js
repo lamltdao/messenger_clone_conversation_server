@@ -44,7 +44,6 @@ module.exports = {
             .exec()
             // get a limited number of messages only    
             conversations.map(conversation => {
-
                 const length = conversation.messages.length
                 if(length >= messageLimit) {
                     const limitedMessages = conversation.messages.filter((element, index) => {
@@ -52,7 +51,6 @@ module.exports = {
                     })
                     conversation.messages = limitedMessages               
                 }
-                
             })
         
             if(conversations == null) {
