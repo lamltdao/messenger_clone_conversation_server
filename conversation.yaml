@@ -1,0 +1,4 @@
+runtime: nodejs14
+service: conversation
+env_variables:
+  DATABASE_URL: "mongodb+srv://user:dbUserPassword@main.us7x1.mongodb.net/conversation?retryWrites=true&w=majority"
