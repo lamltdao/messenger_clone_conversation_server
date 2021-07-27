@@ -43,5 +43,5 @@ io.of("/video-call").on("connection", SocketController.handleVideoCallSocket);
 // Listen on port
 const PORT = process.env.PORT || 3002;
 http.listen(PORT, () => {
-  console.log("Message server is listening on port " + PORT);
+  console.log("Conversation server is listening on port " + PORT);
 });
